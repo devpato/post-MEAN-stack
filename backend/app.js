@@ -1,7 +1,11 @@
 const EXPRESS = require('express');
 const uuidv4 = require('uuid/v4');
+const BODY_PARSER = require('body-parser');
 
 const APP = EXPRESS();
+
+APP.use(BODY_PARSER.json());
+APP.use(BODY_PARSER.urlencoded({ extended: false }));
 
 APP.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,7 +17,15 @@ APP.use((req, res, next) => {
   next();
 });
 
-APP.use('/api/posts', (req, res, next) => {
+APP.post('/api/posts', (req, res, next) => {
+  const POST = req.body;
+  console.log(POST);
+  res.status(201).json({
+    message: 'Post added succesfully'
+  });
+});
+
+APP.get('/api/posts', (req, res, next) => {
   const posts = [
     {
       id: uuidv4(),

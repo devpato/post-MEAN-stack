@@ -1,7 +1,7 @@
 const EXPRESS = require('express');
 const uuidv4 = require('uuid/v4');
 const BODY_PARSER = require('body-parser');
-
+const POST = require('./models/post');
 const APP = EXPRESS();
 
 APP.use(BODY_PARSER.json());
@@ -18,8 +18,12 @@ APP.use((req, res, next) => {
 });
 
 APP.post('/api/posts', (req, res, next) => {
-  const POST = req.body;
-  console.log(POST);
+  const NEW_POST = new POST({
+    title: req.body.title,
+    content: req.body.content
+  });
+
+  console.log(NEW_POST);
   res.status(201).json({
     message: 'Post added succesfully'
   });

@@ -4,6 +4,7 @@ import { Post } from './post.model';
 import { HttpClient } from '@angular/common/http';
 import { error } from 'util';
 import { stringify } from '@angular/compiler/src/util';
+import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
@@ -15,9 +16,16 @@ export class PostsService {
 
   getPosts() {
     return this.http
-      .get<{ message: string; posts: Post[] }>(this.BASE_URL + '/posts')
+      .get<{ message: string; posts: any[] }>(this.BASE_URL + '/posts')
+      .pipe(
+        map(posts => {
+          return posts.posts.map(post => {
+            return { id: post._id, title: post.title, content: post.content };
+          });
+        })
+      )
       .subscribe(res => {
-        this.posts = res.posts;
+        this.posts = res;
         this.postsUpdated.next([...this.posts]);
       });
   }

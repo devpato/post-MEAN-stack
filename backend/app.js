@@ -3,6 +3,18 @@ const uuidv4 = require('uuid/v4');
 const BODY_PARSER = require('body-parser');
 const POST = require('./models/post');
 const APP = EXPRESS();
+const MONGOOSE = require('mongoose');
+
+MONGOOSE.connect(
+  'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular?retryWrites=true&w=majority',
+  { useNewUrlParser: true }
+)
+  .then(() => {
+    console.log('Connected to DB');
+  })
+  .catch(() => {
+    console.log('Connection Failed');
+  });
 
 APP.use(BODY_PARSER.json());
 APP.use(BODY_PARSER.urlencoded({ extended: false }));
@@ -24,37 +36,18 @@ APP.post('/api/posts', (req, res, next) => {
   });
 
   console.log(NEW_POST);
+  NEW_POST.save();
   res.status(201).json({
     message: 'Post added succesfully'
   });
 });
 
 APP.get('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: uuidv4(),
-      title: 'MEAN app from scratch',
-      content: 'This is the content of the first post'
-    },
-    {
-      id: uuidv4(),
-      title: 'First Post',
-      content: "This is the first post's content"
-    },
-    {
-      id: uuidv4(),
-      title: 'Second Post',
-      content: "This is the second post's content"
-    },
-    {
-      id: uuidv4(),
-      title: 'Third Post',
-      content: "This is the third post's content"
-    }
-  ];
-  res.status(200).json({
-    message: 'Post fectch successfully',
-    posts: posts
+  POST.find().then(documents => {
+    res.status(200).json({
+      message: 'Post fectch successfully',
+      posts: documents
+    });
   });
 });
 

@@ -44,4 +44,10 @@ export class PostsService {
         this.postsUpdated.next([...this.posts]);
       });
   }
+
+  deletePost(id: string) {
+    this.http.delete(this.BASE_URL + '/posts/' + id).subscribe(() => {
+      console.log('Post deleted');
+    });
+  }
 }

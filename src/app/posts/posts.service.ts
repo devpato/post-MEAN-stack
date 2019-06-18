@@ -30,11 +30,15 @@ export class PostsService {
       });
   }
 
+  getPost(id: string): Post {
+    return { ...this.posts.find(p => p.id === id) };
+  }
+
   getPostUpdateListener() {
     return this.postsUpdated.asObservable();
   }
 
-  addPost(title: string, content: string) {
+  addPost(title: string, content: string): void {
     const post: Post = { id: null, title: title, content: content };
     this.http
       .post<{ message: string; id: string }>(this.BASE_URL + '/posts', post)
@@ -46,7 +50,7 @@ export class PostsService {
       });
   }
 
-  deletePost(id: string) {
+  deletePost(id: string): void {
     this.http.delete(this.BASE_URL + '/posts/' + id).subscribe(() => {
       console.log('Post deleted');
       const UPDATED_POST = this.posts.filter(post => post.id !== id);

@@ -16,34 +16,22 @@ export class PostCreateComponent implements OnInit {
   private mode = 'create';
   private postId: string;
   post: Post;
-  loading = true;
+  isLoading = false;
 
   constructor(
     public postsService: PostsService,
     public route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('postId')) {
-        this.mode = 'edit';
-        this.postId = paramMap.get('postId');
-        this.postsService.getPost(this.postId).subscribe(post => {
-          this.post = post;
-        });
-      } else {
-        this.mode = 'create';
-        this.postId = null;
-        this.post = { id: null, title: '', content: '' };
-      }
-    });
+  ngOnInit(): void {
+    this.formMode();
   }
 
-  onSavePost(form: NgForm) {
+  onSavePost(form: NgForm): void {
     if (form.invalid) {
       return;
     }
-
+    this.isLoading = true;
     if (this.mode === 'create') {
       this.postsService.addPost(form.value.title, form.value.content);
       form.resetForm();
@@ -55,5 +43,23 @@ export class PostCreateComponent implements OnInit {
         content: form.value.content
       });
     }
+  }
+
+  formMode(): void {
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has('postId')) {
+        this.mode = 'edit';
+        this.postId = paramMap.get('postId');
+        this.isLoading = true;
+        this.postsService.getPost(this.postId).subscribe(post => {
+          this.post = post;
+          this.isLoading = false;
+        });
+      } else {
+        this.mode = 'create';
+        this.postId = null;
+        this.post = { id: null, title: '', content: '' };
+      }
+    });
   }
 }

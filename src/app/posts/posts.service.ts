@@ -57,4 +57,10 @@ export class PostsService {
       this.postsUpdated.next([...UPDATED_POST]);
     });
   }
+
+  updatePost(post: Post) {
+    this.http
+      .put(this.BASE_URL + '/posts/' + post.id, post)
+      .subscribe(res => console.log(res));
+  }
 }

@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Post } from './post.model';
 import { HttpClient } from '@angular/common/http';
-import { error } from 'util';
-import { stringify } from '@angular/compiler/src/util';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
@@ -12,7 +11,7 @@ export class PostsService {
   private postsUpdated = new BehaviorSubject<Post[]>(null);
   BASE_URL = 'http://localhost:5000/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
   getPosts() {
     return this.http
@@ -43,7 +42,7 @@ export class PostsService {
       );
   }
 
-  getPostUpdateListener() {
+  getPostUpdateListener(): Observable<Post[]> {
     return this.postsUpdated.asObservable();
   }
 
@@ -55,7 +54,7 @@ export class PostsService {
         console.log(res);
         post.id = res.id;
         this.posts.push(post);
-        this.postsUpdated.next([...this.posts]);
+        this.updatedUIandGoRedirect();
       });
   }
 
@@ -67,13 +66,18 @@ export class PostsService {
     });
   }
 
-  updatePost(post: Post) {
-    this.http.put(this.BASE_URL + '/posts/' + post.id, post).subscribe(res => {
+  updatePost(post: Post): void {
+    this.http.put(this.BASE_URL + '/posts/' + post.id, post).subscribe(() => {
       const updatedPost = [...this.posts];
       const oldPostIndex = updatedPost.findIndex(p => p.id === post.id);
       updatedPost[oldPostIndex] = post;
       this.posts = updatedPost;
-      this.postsUpdated.next([...this.posts]);
+      this.updatedUIandGoRedirect();
     });
+  }
+
+  updatedUIandGoRedirect(): void {
+    this.postsUpdated.next([...this.posts]);
+    this.router.navigate(['/']);
   }
 }

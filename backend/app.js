@@ -65,6 +65,16 @@ APP.get('/api/posts', (req, res, next) => {
   });
 });
 
+APP.get('/api/posts/:id', (req, res, next) => {
+  POST.findById(req.params.id).then(post => {
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(400).json({ message: 'Post not found!' });
+    }
+  });
+});
+
 APP.delete('/api/posts/:id', (req, res, next) => {
   POST.deleteOne({ _id: req.params.id }).then(result => {
     console.log(result);

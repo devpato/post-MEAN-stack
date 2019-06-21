@@ -16,6 +16,7 @@ export class PostCreateComponent implements OnInit {
   private postId: string;
   post: Post;
   isLoading = false;
+  imagePreview: string;
   form = new FormGroup({
     title: new FormControl(null, {
       validators: [Validators.required, Validators.minLength(3)]
@@ -79,5 +80,11 @@ export class PostCreateComponent implements OnInit {
     const FILE = (event.target as HTMLInputElement).files[0];
     this.form.patchValue({ image: FILE });
     this.form.get('image').updateValueAndValidity();
+    const READER = new FileReader();
+    READER.onload = () => {
+      this.imagePreview = READER.result as string;
+    };
+
+    READER.readAsDataURL(FILE);
   }
 }

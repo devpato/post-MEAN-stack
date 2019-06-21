@@ -9,7 +9,7 @@
         required
         minlength="3"
         placeholder="Post Title"
-        [ngModel]="post.title"
+        [ngModel]="post?.title"
         #title="ngModel"
       />
       <mat-error *ngIf="title.invalid">Please enter a post title.</mat-error>
@@ -19,7 +19,7 @@
         matInput
         rows="4"
         name="content"
-        [ngModel]="post.content"
+        [ngModel]="post?.content"
         required
         placeholder="Post Content"
         #content="ngModel"

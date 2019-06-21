@@ -30,8 +30,17 @@ export class PostsService {
       });
   }
 
-  getPost(id: string): Post {
-    return { ...this.posts.find(p => p.id === id) };
+  getPost(id: string) {
+    //return { ...this.posts.find(p => p.id === id) };
+    return this.http
+      .get<{ _id: string; title: string; content: string }>(
+        this.BASE_URL + '/posts/' + id
+      )
+      .pipe(
+        map(post => {
+          return { id: post._id, title: post.title, content: post.content };
+        })
+      );
   }
 
   getPostUpdateListener() {
@@ -59,8 +68,12 @@ export class PostsService {
   }
 
   updatePost(post: Post) {
-    this.http
-      .put(this.BASE_URL + '/posts/' + post.id, post)
-      .subscribe(res => console.log(res));
+    this.http.put(this.BASE_URL + '/posts/' + post.id, post).subscribe(res => {
+      const updatedPost = [...this.posts];
+      const oldPostIndex = updatedPost.findIndex(p => p.id === post.id);
+      updatedPost[oldPostIndex] = post;
+      this.posts = updatedPost;
+      this.postsUpdated.next([...this.posts]);
+    });
   }
 }

@@ -43,6 +43,19 @@ APP.post('/api/posts', (req, res, next) => {
   });
 });
 
+APP.put('/api/posts/:id', (req, res, next) => {
+  const UPDATED_POST = new POST({
+    _id: req.body.id,
+    title: req.body.title,
+    content: req.body.content
+  });
+
+  POST.updateOne({ _id: req.params.id }, UPDATED_POST).then(result => {
+    console.log(result);
+    res.status(200).json({ message: 'Update Successful' });
+  });
+});
+
 APP.get('/api/posts', (req, res, next) => {
   POST.find().then(documents => {
     res.status(200).json({

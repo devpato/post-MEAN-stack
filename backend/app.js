@@ -3,6 +3,7 @@ const BODY_PARSER = require('body-parser');
 const APP = EXPRESS();
 const MONGOOSE = require('mongoose');
 const POSTS_ROUTES = require('./routes/posts');
+const PATH = require('path');
 
 MONGOOSE.connect(
   'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular?retryWrites=true&w=majority',
@@ -17,6 +18,7 @@ MONGOOSE.connect(
 
 APP.use(BODY_PARSER.json());
 APP.use(BODY_PARSER.urlencoded({ extended: false }));
+APP.use('/images', EXPRESS.static(PATH.join('backend/images')));
 
 APP.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

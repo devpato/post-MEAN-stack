@@ -5,45 +5,47 @@ const MULTER = require('multer');
 
 const MIME_TYPE_MAP = {
   'image/png': 'png',
-  'image/jpg': 'jpg',
-  'image/jpeg': 'jpeg'
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg'
 };
 
-const STORAGE = MULTER.diskStorage({
+const storage = MULTER.diskStorage({
   destination: (req, file, cb) => {
     const isValid = MIME_TYPE_MAP[file.mimetype];
-    let error = new Error('Invalid MIME type');
-
+    let error = new Error('Invalid mime type');
     if (isValid) {
       error = null;
-    } else {
     }
     cb(error, 'backend/images');
   },
   filename: (req, file, cb) => {
-    const NAME = file.originalname
+    const name = file.originalname
       .toLowerCase()
       .split(' ')
-      .split('-');
-    const EXT = MIME_TYPE_MAP[file.mimetype];
-
-    cb(null, name + '-' + Date.now() + '.' + EXT);
+      .join('-');
+    const ext = MIME_TYPE_MAP[file.mimetype];
+    cb(null, name + '-' + Date.now() + '.' + ext);
   }
 });
 
-ROUTER.post('', MULTER(STORAGE).single('image'), (req, res, next) => {
-  const NEW_POST = new POST({
-    title: req.body.title,
-    content: req.body.content
-  });
-
-  NEW_POST.save().then(result => {
-    res.status(201).json({
-      message: 'Post added succesfully',
-      id: result._id
+ROUTER.post(
+  '',
+  MULTER({ storage: storage }).single('image'),
+  (req, res, next) => {
+    const NEW_POST = new POST({
+      title: req.body.title,
+      content: req.body.content
     });
-  });
-});
+
+    NEW_POST.save().then(result => {
+      res.status(201).json({
+        message: 'Post added succesfully',
+        id: result._id
+      });
+      console.log('saved new image');
+    });
+  }
+);
 
 ROUTER.put('/:id', (req, res, next) => {
   const UPDATED_POST = new POST({

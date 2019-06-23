@@ -32,15 +32,20 @@ ROUTER.post(
   '',
   MULTER({ storage: storage }).single('image'),
   (req, res, next) => {
+    const URL = req.protocol + '://' + req.get('host');
     const NEW_POST = new POST({
       title: req.body.title,
-      content: req.body.content
+      content: req.body.content,
+      imagePath: URL + '/images/' + req.file.filename
     });
 
     NEW_POST.save().then(result => {
       res.status(201).json({
         message: 'Post added succesfully',
-        id: result._id
+        post: {
+          id: result._id,
+          ...result
+        }
       });
       console.log('saved new image');
     });

@@ -46,13 +46,19 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
-  addPost(title: string, content: string): void {
-    const post: Post = { id: null, title: title, content: content };
+  addPost(title: string, content: string, image: File): void {
+    const POST_DATA = new FormData();
+    POST_DATA.append('title', title);
+    POST_DATA.append('content', content);
+    POST_DATA.append('image', image, title);
+    console.log('new post');
     this.http
-      .post<{ message: string; id: string }>(this.BASE_URL + '/posts', post)
+      .post<{ message: string; id: string }>(
+        this.BASE_URL + '/posts',
+        POST_DATA
+      )
       .subscribe(res => {
-        console.log(res);
-        post.id = res.id;
+        const post: Post = { id: null, title: title, content: content };
         this.posts.push(post);
         this.updatedUIandGoRedirect();
       });

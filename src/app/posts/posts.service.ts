@@ -19,7 +19,12 @@ export class PostsService {
       .pipe(
         map(posts => {
           return posts.posts.map(post => {
-            return { id: post._id, title: post.title, content: post.content };
+            return {
+              id: post._id,
+              title: post.title,
+              content: post.content,
+              imagePath: post.imagePath
+            };
           });
         })
       )
@@ -32,12 +37,17 @@ export class PostsService {
   getPost(id: string) {
     //return { ...this.posts.find(p => p.id === id) };
     return this.http
-      .get<{ _id: string; title: string; content: string }>(
+      .get<{ _id: string; title: string; content: string; imagePath: string }>(
         this.BASE_URL + '/posts/' + id
       )
       .pipe(
         map(post => {
-          return { id: post._id, title: post.title, content: post.content };
+          return {
+            id: post._id,
+            title: post.title,
+            content: post.content,
+            imagePath: post.imagePath
+          };
         })
       );
   }
@@ -53,12 +63,17 @@ export class PostsService {
     POST_DATA.append('image', image, title);
     console.log('new post');
     this.http
-      .post<{ message: string; id: string }>(
+      .post<{ message: string; post: Post }>(
         this.BASE_URL + '/posts',
         POST_DATA
       )
       .subscribe(res => {
-        const post: Post = { id: null, title: title, content: content };
+        const post: Post = {
+          id: res.post.id,
+          title: title,
+          content: content,
+          imagePath: res.post.imagePath
+        };
         this.posts.push(post);
         this.updatedUIandGoRedirect();
       });
@@ -68,7 +83,9 @@ export class PostsService {
     this.http.delete(this.BASE_URL + '/posts/' + id).subscribe(() => {
       console.log('Post deleted');
       const UPDATED_POST = this.posts.filter(post => post.id !== id);
-      this.postsUpdated.next([...UPDATED_POST]);
+      console.log(id);
+      this.posts = UPDATED_POST;
+      this.postsUpdated.next([...this.posts]);
     });
   }
 

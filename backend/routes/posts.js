@@ -1,7 +1,9 @@
-const EXPRESS = require('express');
-const ROUTER = EXPRESS.Router();
-const POST = require('../models/post');
-const MULTER = require('multer');
+const express = require('express');
+const multer = require('multer');
+
+const Post = require('../models/post');
+
+const router = express.Router();
 
 const MIME_TYPE_MAP = {
   'image/png': 'png',
@@ -9,7 +11,7 @@ const MIME_TYPE_MAP = {
   'image/jpg': 'jpg'
 };
 
-const storage = MULTER.diskStorage({
+const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const isValid = MIME_TYPE_MAP[file.mimetype];
     let error = new Error('Invalid mime type');
@@ -28,81 +30,87 @@ const storage = MULTER.diskStorage({
   }
 });
 
-ROUTER.post(
+router.post(
   '',
-  MULTER({ storage: storage }).single('image'),
+  multer({ storage: storage }).single('image'),
   (req, res, next) => {
-    const URL = req.protocol + '://' + req.get('host');
-    const NEW_POST = new POST({
+    const url = req.protocol + '://' + req.get('host');
+    const post = new Post({
       title: req.body.title,
       content: req.body.content,
-      imagePath: URL + '/images/' + req.file.filename
+      imagePath: url + '/images/' + req.file.filename
     });
-
-    NEW_POST.save().then(result => {
+    post.save().then(createdPost => {
       res.status(201).json({
-        message: 'Post added succesfully',
+        message: 'Post added successfully',
         post: {
-          id: result._id,
-          ...result
+          ...createdPost,
+          id: createdPost._id
         }
       });
-      console.log('saved new image');
     });
   }
 );
 
-ROUTER.put(
+router.put(
   '/:id',
-  MULTER({ storage: storage }).single('image'),
+  multer({ storage: storage }).single('image'),
   (req, res, next) => {
     let imagePath = req.body.imagePath;
     if (req.file) {
       const url = req.protocol + '://' + req.get('host');
       imagePath = url + '/images/' + req.file.filename;
     }
-    const post = new POST({
+    const post = new Post({
       _id: req.body.id,
       title: req.body.title,
       content: req.body.content,
       imagePath: imagePath
     });
-    POST.updateOne({ _id: req.params.id }, post).then(result => {
+    console.log(post);
+    Post.updateOne({ _id: req.params.id }, post).then(result => {
       res.status(200).json({ message: 'Update successful!' });
     });
   }
 );
 
-ROUTER.get('', (req, res, next) => {
-  const PAGE_SIZE = +req.query.pageSize;
-  const CURRENT_PAGE = +req.query.page;
-  const POST_QUERY = POST.find();
-  if (CURRENT_PAGE && PAGE_SIZE) {
-    POST_QUERY.skip(PAGE_SIZE * (CURRENT_PAGE - 1)).limit(PAGE_SIZE);
+router.get('', (req, res, next) => {
+  const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const postQuery = Post.find();
+  let fetchedPosts;
+  if (pageSize && currentPage) {
+    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
   }
-  POST_QUERY.find().then(documents => {
-    res.status(200).json({
-      message: 'Post fectch successfully',
-      posts: documents
+  postQuery
+    .then(documents => {
+      fetchedPosts = documents;
+      return Post.count();
+    })
+    .then(count => {
+      res.status(200).json({
+        message: 'Posts fetched successfully!',
+        posts: fetchedPosts,
+        maxPosts: count
+      });
     });
-  });
 });
 
-ROUTER.get('/:id', (req, res, next) => {
-  POST.findById(req.params.id).then(post => {
+router.get('/:id', (req, res, next) => {
+  Post.findById(req.params.id).then(post => {
     if (post) {
       res.status(200).json(post);
     } else {
-      res.status(400).json({ message: 'Post not found!' });
+      res.status(404).json({ message: 'Post not found!' });
     }
   });
 });
 
-ROUTER.delete('/:id', (req, res, next) => {
-  POST.deleteOne({ _id: req.params.id }).then(result => {
+router.delete('/:id', (req, res, next) => {
+  Post.deleteOne({ _id: req.params.id }).then(result => {
     console.log(result);
-    res.status(200).json({ message: 'Post deleted' });
+    res.status(200).json({ message: 'Post deleted!' });
   });
 });
 
-module.exports = ROUTER;
+module.exports = router;

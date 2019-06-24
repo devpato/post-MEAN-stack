@@ -9,8 +9,8 @@ const POSTS_ROUTES = require('./routes/posts');
 const USER_ROUTES = require('./routes/user');
 
 MONGOOSE.connect(
-  'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular?retryWrites=true&w=majority',
-  { useNewUrlParser: true }
+  'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular',
+  { useCreateIndex: true, useNewUrlParser: true }
 )
   .then(() => {
     console.log('Connected to DB');

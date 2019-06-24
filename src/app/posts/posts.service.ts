@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
@@ -10,14 +10,15 @@ import { Post } from './post.model';
 export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
+  BASE_URL = 'http://localhost:5000/api/posts/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getPosts(postsPerPage: number, currentPage: number) {
+  getPosts(postsPerPage: number, currentPage: number): void {
     const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
     this.http
       .get<{ message: string; posts: any; maxPosts: number }>(
-        'http://localhost:5000/api/posts' + queryParams
+        this.BASE_URL + queryParams
       )
       .pipe(
         map(postData => {
@@ -43,35 +44,44 @@ export class PostsService {
       });
   }
 
-  getPostUpdateListener() {
+  getPostUpdateListener(): Observable<{ posts: Post[]; postCount: number }> {
     return this.postsUpdated.asObservable();
   }
 
-  getPost(id: string) {
+  getPost(
+    id: string
+  ): Observable<{
+    _id: string;
+    title: string;
+    content: string;
+    imagePath: string;
+  }> {
     return this.http.get<{
       _id: string;
       title: string;
       content: string;
       imagePath: string;
-    }>('http://localhost:5000/api/posts/' + id);
+    }>(this.BASE_URL + id);
   }
 
-  addPost(title: string, content: string, image: File) {
+  addPost(title: string, content: string, image: File): void {
     const postData = new FormData();
     postData.append('title', title);
     postData.append('content', content);
     postData.append('image', image, title);
     this.http
-      .post<{ message: string; post: Post }>(
-        'http://localhost:5000/api/posts',
-        postData
-      )
-      .subscribe(responseData => {
+      .post<{ message: string; post: Post }>(this.BASE_URL, postData)
+      .subscribe(() => {
         this.router.navigate(['/']);
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
+  updatePost(
+    id: string,
+    title: string,
+    content: string,
+    image: File | string
+  ): void {
     let postData: Post | FormData;
     if (typeof image === 'object') {
       postData = new FormData();
@@ -87,14 +97,12 @@ export class PostsService {
         imagePath: image
       };
     }
-    this.http
-      .put('http://localhost:5000/api/posts/' + id, postData)
-      .subscribe(response => {
-        this.router.navigate(['/']);
-      });
+    this.http.put(this.BASE_URL + id, postData).subscribe(response => {
+      this.router.navigate(['/']);
+    });
   }
 
-  deletePost(postId: string) {
-    return this.http.delete('http://localhost:5000/api/posts/' + postId);
+  deletePost(postId: string): Observable<{}> {
+    return this.http.delete(this.BASE_URL + postId);
   }
 }

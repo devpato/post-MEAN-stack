@@ -52,18 +52,26 @@ ROUTER.post(
   }
 );
 
-ROUTER.put('/:id', (req, res, next) => {
-  const UPDATED_POST = new POST({
-    _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content
-  });
-
-  POST.updateOne({ _id: req.params.id }, UPDATED_POST).then(result => {
-    console.log(result);
-    res.status(200).json({ message: 'Update Successful' });
-  });
-});
+ROUTER.put(
+  '/:id',
+  MULTER({ storage: storage }).single('image'),
+  (req, res, next) => {
+    let imagePath = req.body.imagePath;
+    if (req.file) {
+      const url = req.protocol + '://' + req.get('host');
+      imagePath = url + '/images/' + req.file.filename;
+    }
+    const post = new POST({
+      _id: req.body.id,
+      title: req.body.title,
+      content: req.body.content,
+      imagePath: imagePath
+    });
+    POST.updateOne({ _id: req.params.id }, post).then(result => {
+      res.status(200).json({ message: 'Update successful!' });
+    });
+  }
+);
 
 ROUTER.get('', (req, res, next) => {
   POST.find().then(documents => {

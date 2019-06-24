@@ -2,8 +2,11 @@ const EXPRESS = require('express');
 const BODY_PARSER = require('body-parser');
 const APP = EXPRESS();
 const MONGOOSE = require('mongoose');
-const POSTS_ROUTES = require('./routes/posts');
 const PATH = require('path');
+
+//Routes
+const POSTS_ROUTES = require('./routes/posts');
+const USER_ROUTES = require('./routes/user');
 
 MONGOOSE.connect(
   'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular?retryWrites=true&w=majority',
@@ -31,4 +34,5 @@ APP.use((req, res, next) => {
 });
 
 APP.use('/api/posts', POSTS_ROUTES);
+APP.use('/api/user', USER_ROUTES);
 module.exports = APP;

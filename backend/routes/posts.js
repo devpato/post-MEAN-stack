@@ -74,7 +74,13 @@ ROUTER.put(
 );
 
 ROUTER.get('', (req, res, next) => {
-  POST.find().then(documents => {
+  const PAGE_SIZE = +req.query.pageSize;
+  const CURRENT_PAGE = +req.query.page;
+  const POST_QUERY = POST.find();
+  if (CURRENT_PAGE && PAGE_SIZE) {
+    POST_QUERY.skip(PAGE_SIZE * (CURRENT_PAGE - 1)).limit(PAGE_SIZE);
+  }
+  POST_QUERY.find().then(documents => {
     res.status(200).json({
       message: 'Post fectch successfully',
       posts: documents

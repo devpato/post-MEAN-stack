@@ -48,14 +48,7 @@ export class PostsService {
     return this.postsUpdated.asObservable();
   }
 
-  getPost(
-    id: string
-  ): Observable<{
-    _id: string;
-    title: string;
-    content: string;
-    imagePath: string;
-  }> {
+  getPost(id: string) {
     return this.http.get<{
       _id: string;
       title: string;

@@ -1,24 +1,26 @@
 import { AbstractControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, of } from 'rxjs';
 
 export const mimeType = (
   control: AbstractControl
 ): Promise<{ [key: string]: any }> | Observable<{ [key: string]: any }> => {
-  const FILE = control.value as File;
-  const FILE_READER = new FileReader();
-  const FILE_OBS = Observable.create(
+  if (typeof control.value === 'string') {
+    return of(null);
+  }
+  const file = control.value as File;
+  const fileReader = new FileReader();
+  const frObs = Observable.create(
     (observer: Observer<{ [key: string]: any }>) => {
-      FILE_READER.addEventListener('loadend', () => {
-        const ARR = new Uint8Array(FILE_READER.result as ArrayBuffer).subarray(
+      fileReader.addEventListener('loadend', () => {
+        const arr = new Uint8Array(fileReader.result as ArrayBuffer).subarray(
           0,
           4
         );
         let header = '';
         let isValid = false;
-        for (let i = 0; i < ARR.length; i++) {
-          header += ARR[i].toString(16);
+        for (let i = 0; i < arr.length; i++) {
+          header += arr[i].toString(16);
         }
-
         switch (header) {
           case '89504e47':
             isValid = true;
@@ -34,7 +36,6 @@ export const mimeType = (
             isValid = false; // Or you can use the blob.type as fallback
             break;
         }
-
         if (isValid) {
           observer.next(null);
         } else {
@@ -42,8 +43,8 @@ export const mimeType = (
         }
         observer.complete();
       });
-      FILE_READER.readAsArrayBuffer(FILE);
+      fileReader.readAsArrayBuffer(file);
     }
   );
-  return FILE_OBS;
+  return frObs;
 };

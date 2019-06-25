@@ -7,9 +7,10 @@ import { AuthData } from './auth-data.model';
 })
 export class AuthService {
   constructor(private http: HttpClient) {}
-  BASE_URL = 'http://localhost:3000/api/user/';
+  BASE_URL = 'http://localhost:5000/api/user';
   createUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
+    console.log(authData);
     this.http.post(this.BASE_URL + '/signup', authData).subscribe(response => {
       console.log(response);
     });

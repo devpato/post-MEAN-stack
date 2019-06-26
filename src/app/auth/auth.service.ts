@@ -15,4 +15,12 @@ export class AuthService {
       console.log(response);
     });
   }
+
+  login(email: string, password: string) {
+    const authData: AuthData = { email: email, password: password };
+    console.log(authData);
+    this.http.post(this.BASE_URL + '/login', authData).subscribe(response => {
+      console.log(response);
+    });
+  }
 }

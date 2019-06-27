@@ -40,6 +40,13 @@ export class AuthService {
       });
   }
 
+  logout() {
+    this.token = null;
+    this.isAuth = false;
+    this.authStatusListener.next(false);
+    this.router.navigate(['/']);
+  }
+
   getAuthStatusListener(): Observable<boolean> {
     return this.authStatusListener.asObservable();
   }

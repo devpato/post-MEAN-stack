@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
-import { Route, Router } from '@angular/router';
-import { listenerCount } from 'cluster';
+import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 
 @Injectable({
@@ -18,7 +17,6 @@ export class AuthService {
 
   createUser(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    console.log(authData);
     this.http.post(this.BASE_URL + '/signup', authData).subscribe(response => {
       console.log(response);
     });
@@ -26,11 +24,9 @@ export class AuthService {
 
   login(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
-    console.log(authData);
     this.http
       .post<{ token: string }>(this.BASE_URL + '/login', authData)
       .subscribe(response => {
-        console.log(response.token);
         this.token = response.token;
         if (this.token) {
           this.isAuth = true;
@@ -52,7 +48,6 @@ export class AuthService {
   }
 
   getToken(): string {
-    console.log(this.token);
     return this.token;
   }
 

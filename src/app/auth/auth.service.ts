@@ -11,6 +11,7 @@ export class AuthService {
   private token: string;
   private isAuth = false;
   private authStatusListener = new Subject<boolean>();
+  private tokenTimer: NodeJS.Timer;
   BASE_URL = 'http://localhost:5000/api/user';
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -25,10 +26,17 @@ export class AuthService {
   login(email: string, password: string) {
     const authData: AuthData = { email: email, password: password };
     this.http
-      .post<{ token: string }>(this.BASE_URL + '/login', authData)
+      .post<{ token: string; expiresIn: number }>(
+        this.BASE_URL + '/login',
+        authData
+      )
       .subscribe(response => {
         this.token = response.token;
         if (this.token) {
+          const expiresInDuration = response.expiresIn;
+          this.tokenTimer = setTimeout(() => {
+            this.logout();
+          }, expiresInDuration * 1000);
           this.isAuth = true;
           this.authStatusListener.next(true);
           this.router.navigate(['/']);
@@ -40,6 +48,7 @@ export class AuthService {
     this.token = null;
     this.isAuth = false;
     this.authStatusListener.next(false);
+    clearTimeout(this.tokenTimer);
     this.router.navigate(['/']);
   }
 

@@ -10,7 +10,7 @@ import { Post } from './post.model';
 export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
-  BASE_URL = 'http://localhost:5000/api/posts/';
+  BASE_URL = 'http://localhost:3000/api/posts/';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -24,11 +24,13 @@ export class PostsService {
         map(postData => {
           return {
             posts: postData.posts.map(post => {
+              console.log('post', post.creator);
               return {
                 title: post.title,
                 content: post.content,
                 id: post._id,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                creator: post.creator
               };
             }),
             maxPosts: postData.maxPosts

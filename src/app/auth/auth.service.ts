@@ -12,7 +12,7 @@ export class AuthService {
   private isAuth = false;
   private authStatusListener = new Subject<boolean>();
   private tokenTimer: NodeJS.Timer;
-  BASE_URL = 'http://localhost:5000/api/user';
+  BASE_URL = 'http://localhost:3000/api/user';
 
   constructor(private http: HttpClient, private router: Router) {}
 

@@ -32,7 +32,7 @@ router.post('/login', (req, res, next) => {
     .then(user => {
       if (!user) {
         return res.status(401).json({
-          message: 'Auth failed'
+          message: "Auth failed, user doesn't exist"
         });
       }
       fetchedUser = user;
@@ -41,7 +41,7 @@ router.post('/login', (req, res, next) => {
     .then(result => {
       if (!result) {
         return res.status(401).json({
-          message: 'Auth failed'
+          message: "Auth failed, cretentials didn't match"
         });
       }
       const token = JWT.sign(
@@ -51,7 +51,8 @@ router.post('/login', (req, res, next) => {
       );
       res.status(200).json({
         token: token,
-        expiresIn: 3600
+        expiresIn: 3600,
+        userId: fetchedUser._id
       });
     })
     .catch(err => {

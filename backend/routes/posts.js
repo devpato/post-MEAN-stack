@@ -2,7 +2,7 @@ const express = require('express');
 const checkAuth = require('../middleware/check-auth');
 const router = express.Router();
 const PostsController = require('../controllers/posts');
-const extractFile = require('../middleware/check-auth');
+const extractFile = require('../middleware/file');
 
 router.post('', checkAuth, extractFile, PostsController.createPost);
 router.put('/:id', checkAuth, extractFile, PostsController.updatePost);

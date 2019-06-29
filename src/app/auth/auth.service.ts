@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthData } from './auth-data.model';
 import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
-import { repeat } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,7 @@ export class AuthService {
   private authStatusListener = new Subject<boolean>();
   private tokenTimer: NodeJS.Timer;
   private userId: string;
-  BASE_URL = 'http://localhost:3000/api/user';
+  BASE_URL = environment.apiUrl + '/user';
 
   constructor(private http: HttpClient, private router: Router) {}
 

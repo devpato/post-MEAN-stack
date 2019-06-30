@@ -28,4 +28,8 @@ AWS Elastic Beanstalk for NodeJS Backend
 MongoDB Atlas for our MongoDB table
 
 ## LIVE Deployment
-http://posts-mean-aws.s3-website-us-east-1.amazonaws.com/
+APP: http://posts-mean-aws.s3-website-us-east-1.amazonaws.com/
+<br/>
+API: http://postnodeangular-env.m9he3wufiw.us-east-1.elasticbeanstalk.com/api/posts
+
+

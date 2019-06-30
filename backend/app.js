@@ -9,7 +9,9 @@ const POSTS_ROUTES = require('./routes/posts');
 const USER_ROUTES = require('./routes/user');
 
 MONGOOSE.connect(
-  'mongodb+srv://super:super@cluster0-fnddg.mongodb.net/node-angular',
+  'mongodb+srv://super:' +
+    process.env.MONGO_ATLAS_PW +
+    '@cluster0-fnddg.mongodb.net/node-angular',
   { useCreateIndex: true, useNewUrlParser: true }
 )
   .then(() => {

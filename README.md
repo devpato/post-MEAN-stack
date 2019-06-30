@@ -20,7 +20,7 @@ AWS
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ## NodeJS Development server
-Run `npm run start:server` for a dev server. Navigate to `http://localhost:3000/`. The server will automatically reload if you change any of the source files.
+Run `npm run start:server` for a dev server. Navigate to `http://localhost:3000/api/post`. The server will automatically reload if you change any of the source files.
 
 ## Prod Deployment
 AWS S3 for the Angular side
